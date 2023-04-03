@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tastecamp.api.dto.RecipiesDTO;
 import com.tastecamp.api.models.Recipie;
-import com.tastecamp.api.repository.RecipieRepository;
+import com.tastecamp.api.service.RecipieService;
 
 import jakarta.validation.Valid;
 
@@ -25,37 +25,30 @@ import jakarta.validation.Valid;
 public class RecipiesController {
 
     @Autowired
-    private RecipieRepository repository; 
+    private RecipieService service; 
 
     @GetMapping
     public List<Recipie> getAll() {
-        return repository.findAll();
+        return service.getAll();
     }
 
     @GetMapping("/{id}")
     public Optional<Recipie> getById(@PathVariable Long id) {
-        return repository.findById(id);
+        return service.getById(id);
     }
     
     @PostMapping
     public void create(@RequestBody @Valid RecipiesDTO req) {
-        repository.save(new Recipie(req));
+        service.create(new Recipie(req));
     }
 
     @PutMapping("/{id}")
     public void update(@PathVariable Long id, @RequestBody @Valid RecipiesDTO req) {
-        repository.findById(id).map(item -> {
-            item.setName(req.name());
-            item.setIngredients(req.ingredients());
-            item.setPreparation(req.preparation());
-            item.setTime(req.time());
-            item.setLevel(req.level());
-            return repository.save(item);
-        });
+        service.updateById(id, req);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        repository.deleteById(id);
+        service.deleteById(id);
     }
 }
